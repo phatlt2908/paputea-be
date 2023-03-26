@@ -1,4 +1,3 @@
 module.exports = {
-    secret: 'lacserverminecraft',
-    defaultWorld: 'world'
+  secret: 'paputea@hauh2323hnv'
 };
