@@ -19,7 +19,17 @@ getGradeList = async function (req, res) {
   }
 };
 
+getSubjectList = async function (req, res) {
+  try {
+    const sqlSubjectList = await pool.query(staticRepo.SUBJECT_LIST);
+    res.status(200).send(sqlSubjectList.rows);
+  } catch (err) {
+    console.error("Load subject list failed:", err);
+  }
+};
+
 module.exports = {
   getAddressList,
   getGradeList,
+  getSubjectList,
 };

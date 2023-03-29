@@ -1,5 +1,6 @@
-const app = module.exports = require('express')();
+const app = (module.exports = require("express")());
 
-const {} = require('../../actions/service').class;
+const {} = require("../../actions/service").class;
 
-app.get('/list', getClassList);
+app.post("/create", createClass);
+app.get("/list", getClassList);
