@@ -27,6 +27,8 @@ createClass = async function (req, res) {
       false, // isApproved
       10, // status
       new Date(),
+      data.tutorType,
+      data.tuition,
     ]);
 
     res.status(200).send();

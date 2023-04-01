@@ -1,8 +1,8 @@
 module.exports = {
   CREATE_CLASS: `INSERT INTO classes (class_code, register_name, address_id,
       address_detail, register_phone, grade_id, subject_id, sessions_per_week,
-      opening_day, note, is_approved, status, registration_date)
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      opening_day, note, is_approved, status, registration_date, tutor_type, tuition)
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
   GET_CLASS_LIST: `SELECT classes.id AS "id",
       classes.class_code AS "code",
       address.name AS "province",
@@ -11,6 +11,8 @@ module.exports = {
       subject.name AS "subjectName",
       classes.sessions_per_week AS "sessionsPerWeek",
       classes.opening_day AS "openingDay",
+      classes.tutor_type AS "tutorType",
+      classes.tuition AS "tuition",
       classes.registration_date AS "registrationDate",
       classes.note AS "note",
       classes.like_count AS "likeCount"
