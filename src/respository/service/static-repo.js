@@ -5,7 +5,7 @@ module.exports = {
   GRADE_LIST: `SELECT grade.id AS id, grade.code AS code, grade.name AS name
         FROM static_grade AS grade
         ORDER BY id ASC`,
-  SUBJECT_LIST: `SELECT subjects.id AS id, subjects.code AS code, subjects.name AS name
-        FROM subjects
+  SUBJECT_LIST: `SELECT subject.id AS id, subject.code AS code, subject.name AS name
+        FROM static_subject AS subject
         ORDER BY id ASC`,
 };
