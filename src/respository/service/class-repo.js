@@ -24,7 +24,15 @@ module.exports = {
     INNER JOIN static_subject AS subject 
       ON subject.id = classes.subject_id
     ORDER BY classes.registration_date DESC
-    LIMIT 20`,
+    LIMIT $1 OFFSET $2`,
+  COUNT_ALL_CLASSES: `SELECT COUNT(classes.id) as count
+    FROM classes
+    INNER JOIN static_address AS address
+      ON address.id = classes.address_id
+    INNER JOIN static_grade AS grade
+      ON grade.id = classes.grade_id
+    INNER JOIN static_subject AS subject 
+      ON subject.id = classes.subject_id`,
   CREATE_CENTER_CLASS: `INSERT INTO center_classes (register_name, 
     register_phone, grade_id, subject_id, sessions_per_week, opening_day,
     note, is_confirmed, registration_date)
