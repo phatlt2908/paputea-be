@@ -33,7 +33,7 @@ createClass = async function (req, res) {
 
     res.status(200).send();
   } catch (err) {
-    console.error("load class list failed:", err);
+    console.error("Create class failed:", err);
     res.status(500).send("Internal server error");
   }
 };

@@ -7,6 +7,7 @@ module.exports = function (app) {
   app.use("/user", require("./master/user-router"));
   app.use("/master/category", require("./master/category-router"));
 
+  app.use("/tutor", require("./service/tutor-router"));
   app.use("/class", require("./service/class-router"));
   app.use("/static", require("./service/static-router"));
 
