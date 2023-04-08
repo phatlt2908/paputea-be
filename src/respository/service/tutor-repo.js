@@ -6,4 +6,12 @@ module.exports = {
       desired_tuition, free_times, advantage, note, is_approved, registration_date)
     VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 
       $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27)`,
+  GET_TUTOR_BY_PHONE: `SELECT
+      tutors.tutor_name AS "name",
+      address.name AS "province",
+      tutors.is_approved AS "isApproved"
+    FROM tutors
+    INNER JOIN static_address AS address
+      ON address.id = tutors.workplace_id
+    WHERE tutors.phone = $1`,
 };

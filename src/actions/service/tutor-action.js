@@ -42,6 +42,21 @@ createTutor = async function (req, res) {
   }
 };
 
+checkPhone = async function (req, res) {
+  try {
+    const phone = req.query.phone;
+
+    const sqlTutorInfo = await pool.query(tutorRepo.GET_TUTOR_BY_PHONE, [
+      phone,
+    ]);
+
+    res.status(200).send(sqlTutorInfo.rows[0]);
+  } catch (err) {
+    console.error("Check tutor failed:", err);
+    res.status(500).send("Internal server error");
+  }
+};
+
 module.exports = {
-  createTutor
+  createTutor,
 };

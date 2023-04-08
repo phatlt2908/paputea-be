@@ -23,8 +23,13 @@ module.exports = {
       ON grade.id = classes.grade_id
     INNER JOIN static_subject AS subject 
       ON subject.id = classes.subject_id
-    ORDER BY classes.registration_date DESC
-    LIMIT $1 OFFSET $2`,
+    WHERE
+      address.code IN ($1)
+      AND grade.code IN ($2)
+      AND subject.code IN ($3)
+      AND classes.tutor_type IN ($4)
+    ORDER BY $5
+    LIMIT $6 OFFSET $7`,
   COUNT_ALL_CLASSES: `SELECT COUNT(classes.id) as count
     FROM classes
     INNER JOIN static_address AS address

@@ -5,13 +5,8 @@ createClass = async function (req, res) {
   try {
     const data = req.body;
 
-    const now = new Date();
-    const year = now.getFullYear().toString().substring(2);
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const dateString = year + month + day;
-
-    const code = "P" + dateString + "-" + Math.floor(Math.random() * 100);
+    const code =
+      "P" + new Date().getTime() + "-" + Math.floor(Math.random() * 100);
 
     await pool.query(classRepo.CREATE_CLASS, [
       code,
@@ -39,11 +34,36 @@ createClass = async function (req, res) {
 };
 
 getClassList = async function (req, res) {
-  const itemsPerPage = req.body.pagination.itemsPerPage || 10;
-  const currentPage = req.body.pagination.currentPage || 1;
-
   try {
+    const itemsPerPage = req.body.pagination.itemsPerPage || 10;
+    const currentPage = req.body.pagination.currentPage || 1;
+    const addresses = req.body.query.addresses;
+    const grades = req.body.query.grades;
+    const subjects = req.body.query.subjects;
+    const tutorTypes = req.body.query.tutorTypes;
+
+    var sort;
+    switch (req.body.sort) {
+      case 1:
+        sort = "classes.registration_date DESC";
+        break;
+      case 2:
+        sort = "classes.tuition ASC";
+        break;
+      case 3:
+        sort = "classes.tuition DESC";
+        break;
+
+      default:
+        sort = "classes.registration_date DESC";
+        break;
+    }
     const sqlClassList = await pool.query(classRepo.GET_CLASS_LIST, [
+      addresses,
+      grades,
+      subjects,
+      tutorTypes,
+      sort,
       itemsPerPage,
       (currentPage - 1) * itemsPerPage,
     ]);
@@ -70,8 +90,6 @@ getClassDetail = async function (req, res) {
     const sqlClassDetail = await pool.query(classRepo.GET_CLASS_DETAIL, [
       classCode,
     ]);
-
-    console.log("sqlClassDetail >>> ", sqlClassDetail);
 
     res.status(200).send(sqlClassDetail.rows[0]);
   } catch (err) {
