@@ -63,6 +63,23 @@ getClassList = async function (req, res) {
   }
 };
 
+getClassDetail = async function (req, res) {
+  const classCode = req.query.classCode;
+
+  try {
+    const sqlClassDetail = await pool.query(classRepo.GET_CLASS_DETAIL, [
+      classCode,
+    ]);
+
+    console.log("sqlClassDetail >>> ", sqlClassDetail);
+
+    res.status(200).send(sqlClassDetail.rows[0]);
+  } catch (err) {
+    console.error("load class detail failed:", err);
+    res.status(500).send("Internal server error");
+  }
+};
+
 createCenterClass = async function (req, res) {
   try {
     const data = req.body;
