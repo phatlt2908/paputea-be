@@ -37,20 +37,32 @@ getClassList = async function (req, res) {
   try {
     const itemsPerPage = req.body.pagination.itemsPerPage || 10;
     const currentPage = req.body.pagination.currentPage || 1;
-    const addresses = req.body.query.addresses;
-    const grades = req.body.query.grades;
-    const subjects = req.body.query.subjects;
-    const tutorTypes = req.body.query.tutorTypes;
+    const addresses =
+      req.body.query.addresses && req.body.query.addresses.length
+        ? req.body.query.addresses
+        : [];
+    const grades =
+      req.body.query.grades && req.body.query.grades.length
+        ? req.body.query.grades
+        : [];
+    const subjects =
+      req.body.query.subjects && req.body.query.subjects.length
+        ? req.body.query.subjects
+        : [];
+    const tutorTypes =
+      req.body.query.tutorTypes && req.body.query.tutorTypes.length
+        ? req.body.query.tutorTypes
+        : [];
 
     var sort;
     switch (req.body.sort) {
-      case 1:
+      case "1":
         sort = "classes.registration_date DESC";
         break;
-      case 2:
+      case "2":
         sort = "classes.tuition ASC";
         break;
-      case 3:
+      case "3":
         sort = "classes.tuition DESC";
         break;
 
@@ -58,17 +70,66 @@ getClassList = async function (req, res) {
         sort = "classes.registration_date DESC";
         break;
     }
-    const sqlClassList = await pool.query(classRepo.GET_CLASS_LIST, [
+
+    var searchSQL = "";
+    searchSQL += addresses.length
+      ? `address.code = ANY($1) `
+      : "(address.code = ANY($1) OR TRUE = TRUE) ";
+    searchSQL += grades.length
+      ? `AND grade.code = ANY($2) `
+      : "AND (grade.code = ANY($2) OR TRUE = TRUE) ";
+    searchSQL += subjects.length
+      ? `AND subject.code = ANY($3) `
+      : "AND (subject.code = ANY($3) OR TRUE = TRUE) ";
+    searchSQL += tutorTypes.length
+      ? `AND classes.tutor_type = ANY($4) `
+      : "AND (classes.tutor_type = ANY($4) OR TRUE = TRUE) ";
+
+    const selectSql = `SELECT classes.id AS "id",
+    classes.class_code AS "code",
+    address.name AS "province",
+    classes.address_detail AS "addressDetail",
+    grade.name AS "gradeName",
+    subject.name AS "subjectName",
+    classes.sessions_per_week AS "sessionsPerWeek",
+    classes.opening_day AS "openingDay",
+    classes.tutor_type AS "tutorType",
+    classes.tuition AS "tuition",
+    classes.registration_date AS "registrationDate",
+    classes.note AS "note",
+    classes.like_count AS "likeCount "`;
+    const countSql = `SELECT COUNT(classes.id) as count `;
+    const conditionSql = `FROM classes
+      INNER JOIN static_address AS address
+        ON address.id = classes.address_id
+      INNER JOIN static_grade AS grade
+        ON grade.id = classes.grade_id
+      INNER JOIN static_subject AS subject 
+        ON subject.id = classes.subject_id
+      WHERE
+        ${searchSQL} `;
+    const pagingAndSortSql = `ORDER BY ${sort}
+      LIMIT $5 OFFSET $6`;
+
+    const sqlSelectInputValues = [
       addresses,
       grades,
       subjects,
       tutorTypes,
-      sort,
       itemsPerPage,
       (currentPage - 1) * itemsPerPage,
-    ]);
+    ];
+    const sqlCountInputValues = [addresses, grades, subjects, tutorTypes];
 
-    const sqlCount = await pool.query(classRepo.COUNT_ALL_CLASSES);
+    const sqlClassList = await pool.query(
+      selectSql + conditionSql + pagingAndSortSql,
+      sqlSelectInputValues
+    );
+
+    const sqlCount = await pool.query(
+      countSql + conditionSql,
+      sqlCountInputValues
+    );
     const count = sqlCount.rows[0].count;
 
     res.status(200).send({
