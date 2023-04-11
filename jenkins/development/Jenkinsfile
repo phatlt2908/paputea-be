@@ -1,0 +1,19 @@
+pipeline {
+  agent any
+  stages {
+    stage('Build') {
+      steps {
+        echo 'Building...'
+        sh 'npm -v'
+        sh 'rm -rf node_modules package-lock.json'
+        sh 'npm install'
+      }
+    }
+    stage('Deploy') {
+      steps {
+        echo 'Deploying...'
+        sh 'pm2 startOrRestart ecosystem.config.js --env development'
+      }
+    }
+  }
+}

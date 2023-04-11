@@ -12,7 +12,7 @@ pipeline {
     stage('Deploy') {
       steps {
         echo 'Deploying...'
-        sh 'pm2 startOrRestart ecosystem.config.js'
+        sh 'pm2 startOrRestart ecosystem.config.js --env production'
       }
     }
   }
