@@ -48,7 +48,7 @@ getClassList = async function (req, res) {
       WHERE
         ${searchSQL} `;
     const pagingAndSortSql = 
-      `ORDER BY classes.registration_date DESC
+      `ORDER BY classes.registration_date DESC, classes.id DESC
       LIMIT $3 OFFSET $4`;
 
     const sqlSelectInputValues = [
