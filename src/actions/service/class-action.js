@@ -19,7 +19,6 @@ createClass = async function (req, res) {
       data.sessionsPerWeek,
       data.openingDay,
       data.note,
-      false, // isApproved
       10, // status
       new Date(),
       data.tutorType,

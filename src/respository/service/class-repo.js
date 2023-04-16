@@ -1,8 +1,8 @@
 module.exports = {
   CREATE_CLASS: `INSERT INTO classes (class_code, register_name, address_id,
       address_detail, register_phone, grade_id, subject_id, sessions_per_week,
-      opening_day, note, is_approved, status, registration_date, tutor_type, tuition)
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+      opening_day, note, status, registration_date, tutor_type, tuition)
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
   COUNT_ALL_CLASSES: `SELECT COUNT(classes.id) as count
     FROM classes
     INNER JOIN static_address AS address
