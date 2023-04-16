@@ -47,7 +47,7 @@ module.exports = {
     FROM tutor_class
     INNER JOIN tutors
       ON tutors.id = tutor_class.tutor_id
-    INNER JOIN static_address
+    LEFT JOIN static_address
       ON static_address.id = tutors.teaching_area_id
     WHERE
       tutor_class.class_id = $1
