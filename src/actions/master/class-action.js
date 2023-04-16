@@ -18,6 +18,8 @@ getClassList = async function (req, res) {
     searchSQL += keywordSearch
       ? `AND (LOWER(classes.class_code) LIKE '%' || LOWER($2) || '%'
             OR LOWER(static_address.name) LIKE '%' || LOWER($2) || '%'
+            OR LOWER(classes.register_name) LIKE '%' || LOWER($2) || '%'
+            OR LOWER(classes.register_phone) LIKE '%' || LOWER($2) || '%'
             OR LOWER(static_grade.name) LIKE '%' || LOWER($2) || '%') `
       : "AND (classes.class_code = $2 OR TRUE = TRUE) ";
 
@@ -93,34 +95,27 @@ getCenterClassList = async function (req, res) {
 
     var searchSQL = "";
     searchSQL += statusList.length
-      ? "center_classes.status = ANY($1) "
-      : "(center_classes.status = ANY($1) OR TRUE = TRUE) ";
+      ? "center_classes.is_confirmed = ANY($1) "
+      : "(center_classes.is_confirmed = ANY($1) OR TRUE = TRUE) ";
     searchSQL += keywordSearch
-      ? `AND (LOWER(center_classes.class_code) LIKE '%' || LOWER($2) || '%'
-            OR LOWER(static_address.name) LIKE '%' || LOWER($2) || '%'
+      ? `AND (LOWER(center_classes.register_name) LIKE '%' || LOWER($2) || '%'
+            OR LOWER(center_classes.register_phone) LIKE '%' || LOWER($2) || '%'
             OR LOWER(static_grade.name) LIKE '%' || LOWER($2) || '%') `
-      : "AND (center_classes.class_code = $2 OR TRUE = TRUE) ";
+      : "AND (center_classes.register_name = $2 OR TRUE = TRUE) ";
 
     const selectSql = `SELECT
       center_classes.id AS "id",
-      center_classes.class_code AS "classCode",
       center_classes.register_name AS "registerName",
-      static_address.name AS "addressProvince",
-      center_classes.address_detail AS "addressDetail",
       center_classes.register_phone AS "registerPhone",
       static_grade.name AS "grade",
       static_subject.name AS "subject",
       center_classes.sessions_per_week AS "sessionsPerWeek",
       center_classes.opening_day AS "openingDay",
       center_classes.note AS "note",
-      center_classes.status AS "status",
-      center_classes.registration_date AS "registrationDate",
-      center_classes.tutor_type AS "tutorType",
-      center_classes.tuition AS "tuition"`;
+      center_classes.is_confirmed AS "isConfirmed",
+      center_classes.registration_date AS "registrationDate" `;
     const countSql = `SELECT COUNT(center_classes.id) as count `;
     const conditionSql = `FROM center_classes
-      LEFT JOIN static_address
-        ON static_address.id = center_classes.address_id
       LEFT JOIN static_grade
         ON static_grade.id = center_classes.grade_id
       LEFT JOIN static_subject
@@ -139,7 +134,7 @@ getCenterClassList = async function (req, res) {
     ];
     const sqlCountInputValues = [statusList, keywordSearch];
 
-    const sqlClassList = await pool.query(
+    const sqlCenterClassList = await pool.query(
       selectSql + conditionSql + pagingAndSortSql,
       sqlSelectInputValues
     );
@@ -150,7 +145,7 @@ getCenterClassList = async function (req, res) {
     const count = sqlCount.rows[0].count;
 
     res.status(200).send({
-      classList: sqlClassList.rows,
+      centerClassList: sqlCenterClassList.rows,
       itemsPerPage: itemsPerPage,
       currentPage: currentPage,
       totalClasses: count,
