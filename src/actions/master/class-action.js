@@ -83,6 +83,19 @@ getClassList = async function (req, res) {
   }
 };
 
+getClassDetail = async function (req, res) {
+  try {
+    const classId = req.query.id;
+
+    const classSqlResult = await pool.query(classRepo.GET_CLASS_BY_ID, [classId]);
+
+    res.status(200).send(classSqlResult.rows[0]);
+  } catch (err) {
+    console.error("Load class detail failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
 getCenterClassList = async function (req, res) {
   try {
     const itemsPerPage = req.body.pagination.itemsPerPage || 10;
@@ -158,5 +171,6 @@ getCenterClassList = async function (req, res) {
 
 module.exports = {
   getClassList,
+  getClassDetail,
   getCenterClassList
 };

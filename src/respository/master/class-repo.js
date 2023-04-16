@@ -1,5 +1,5 @@
 module.exports = {
-  GET_CLASS_LIST: `SELECT
+  GET_CLASS_BY_ID: `SELECT
       classes.id AS "id",
       classes.class_code AS "classCode",
       classes.register_name AS "registerName",
@@ -21,5 +21,7 @@ module.exports = {
     LEFT JOIN static_grade
       ON static_grade.id = classes.grade_id
     LEFT JOIN static_subject
-      ON static_subject.id = classes.subject_id`,
+      ON static_subject.id = classes.subject_id
+    WHERE
+    classes.id = $1`,
 };
