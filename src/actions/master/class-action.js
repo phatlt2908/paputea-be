@@ -49,8 +49,7 @@ getClassList = async function (req, res) {
         ON static_subject.id = classes.subject_id
       WHERE
         ${searchSQL} `;
-    const pagingAndSortSql = 
-      `ORDER BY classes.registration_date DESC, classes.id DESC
+    const pagingAndSortSql = `ORDER BY classes.registration_date DESC, classes.id DESC
       LIMIT $3 OFFSET $4`;
 
     const sqlSelectInputValues = [
@@ -87,11 +86,121 @@ getClassDetail = async function (req, res) {
   try {
     const classId = req.query.id;
 
-    const classSqlResult = await pool.query(classRepo.GET_CLASS_BY_ID, [classId]);
+    const classSqlResult = await pool.query(classRepo.GET_CLASS_BY_ID, [
+      classId,
+    ]);
 
     res.status(200).send(classSqlResult.rows[0]);
   } catch (err) {
     console.error("Load class detail failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
+getTutorApproved = async function (req, res) {
+  try {
+    const classId = req.query.classId;
+
+    const tutorApprovedResult = await pool.query(
+      classRepo.GET_TUTOR_APPROVED_BY_CLASS_ID,
+      [classId]
+    );
+
+    res.status(200).send(tutorApprovedResult.rows[0]);
+  } catch (err) {
+    console.error("Load class detail failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
+getTutorRequested = async function (req, res) {
+  try {
+    const classId = req.query.classId;
+
+    const tutorRequestedResult = await pool.query(
+      classRepo.GET_TUTOR_REQUESTED_BY_CLASS_ID,
+      [classId]
+    );
+
+    res.status(200).send(tutorRequestedResult.rows);
+  } catch (err) {
+    console.error("Load tutor requested failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
+approveClass = async function (req, res) {
+  try {
+    const classId = req.query.classId;
+
+    const result = await pool.query(classRepo.UPDATE_CLASS_STATUS, [
+      classId,
+      20,
+    ]);
+
+    if (result.rowCount) {
+      res.status(200).send();
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    console.error("Approve class failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
+approveRequestedClass = async function (req, res) {
+  try {
+    const classId = req.query.classId;
+    const tutorId = req.query.tutorId;
+
+    const checked = await pool.query(classRepo.CHECK_CLASS_APPROVED_REQUESTED, [
+      classId,
+    ]);
+    if (checked.rows.length) {
+      throw new Error("Error: This class is approved selected");
+    }
+
+    const requestedResult = await pool.query(
+      classRepo.APPROVE_REQUESTED_CLASS,
+      [tutorId, classId]
+    );
+    const classResult = await pool.query(classRepo.UPDATE_CLASS_STATUS, [
+      classId,
+      30,
+    ]);
+
+    if (requestedResult.rowCount && classResult.rowCount) {
+      res.status(200).send();
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    console.error("Approve class failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
+undoApproveRequestedClass = async function (req, res) {
+  try {
+    const classId = req.query.classId;
+
+    const requestedResult = await pool.query(
+      classRepo.UNDO_APPROVE_REQUESTED_CLASS,
+      [classId]
+    );
+    const classResult = await pool.query(classRepo.UPDATE_CLASS_STATUS, [
+      classId,
+      20,
+    ]);
+
+    if (requestedResult.rowCount && classResult.rowCount) {
+      res.status(200).send();
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    console.error("Undo approve class failed:", err);
     res.status(400).send({ mes: err });
   }
 };
@@ -135,8 +244,7 @@ getCenterClassList = async function (req, res) {
         ON static_subject.id = center_classes.subject_id
       WHERE
         ${searchSQL} `;
-    const pagingAndSortSql = 
-      `ORDER BY center_classes.registration_date DESC, center_classes.id DESC
+    const pagingAndSortSql = `ORDER BY center_classes.registration_date DESC, center_classes.id DESC
       LIMIT $3 OFFSET $4`;
 
     const sqlSelectInputValues = [
@@ -172,5 +280,10 @@ getCenterClassList = async function (req, res) {
 module.exports = {
   getClassList,
   getClassDetail,
-  getCenterClassList
+  getTutorApproved,
+  getTutorRequested,
+  getCenterClassList,
+  approveClass,
+  approveRequestedClass,
+  undoApproveRequestedClass,
 };

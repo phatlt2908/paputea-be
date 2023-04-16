@@ -107,7 +107,8 @@ getClassList = async function (req, res) {
       INNER JOIN static_subject AS subject 
         ON subject.id = classes.subject_id
       WHERE
-        ${searchSQL} `;
+        ${searchSQL} 
+        AND classes.status = 20 `;
     const pagingAndSortSql = `ORDER BY ${sort}
       LIMIT $5 OFFSET $6`;
 
