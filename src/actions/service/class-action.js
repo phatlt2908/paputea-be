@@ -23,6 +23,8 @@ createClass = async function (req, res) {
       new Date(),
       data.tutorType,
       data.tuition,
+      !!data.isOnline,
+      !!data.isPersonal,
     ]);
 
     res.status(200).send();
