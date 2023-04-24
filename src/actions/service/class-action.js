@@ -98,7 +98,9 @@ getClassList = async function (req, res) {
     classes.tuition AS "tuition",
     classes.registration_date AS "registrationDate",
     classes.note AS "note",
-    classes.like_count AS "likeCount "`;
+    classes.like_count AS "likeCount",
+    classes.is_online AS "isOnline",
+    classes.is_personal AS isPersonal `;
     const countSql = `SELECT COUNT(classes.id) as count `;
     const conditionSql = `FROM classes
       INNER JOIN static_address AS address

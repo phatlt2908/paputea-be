@@ -29,7 +29,9 @@ module.exports = {
       classes.status AS "status",
       classes.registration_date AS "registrationDate",
       classes.note AS "note",
-      classes.like_count AS "likeCount"
+      classes.like_count AS "likeCount",
+      classes.is_online AS "isOnline",
+      classes.is_personal AS "isPersonal"
     FROM classes
     INNER JOIN static_address AS address
       ON address.id = classes.address_id
