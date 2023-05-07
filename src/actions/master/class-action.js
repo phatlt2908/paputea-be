@@ -72,9 +72,11 @@ getClassList = async function (req, res) {
 
     res.status(200).send({
       classList: sqlClassList.rows,
-      itemsPerPage: itemsPerPage,
-      currentPage: currentPage,
-      totalClasses: count,
+      pagination: {
+        itemsPerPage: itemsPerPage,
+        currentPage: currentPage,
+        totalClasses: Number(count),
+      },
     });
   } catch (err) {
     console.error("load class list failed:", err);
