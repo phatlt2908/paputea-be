@@ -54,6 +54,10 @@ getClassList = async function (req, res) {
       req.body.query.tutorTypes && req.body.query.tutorTypes.length
         ? req.body.query.tutorTypes
         : [];
+    const classTypes =
+      req.body.query.classTypes && req.body.query.classTypes.length
+        ? req.body.query.classTypes
+        : [];
 
     var sort;
     switch (req.body.sort) {
@@ -85,6 +89,9 @@ getClassList = async function (req, res) {
     searchSQL += tutorTypes.length
       ? `AND classes.tutor_type = ANY($4) `
       : "AND (classes.tutor_type = ANY($4) OR TRUE = TRUE) ";
+    searchSQL += classTypes.length
+      ? `AND classes.is_online = ANY($5) `
+      : "AND (classes.is_online = ANY($5) OR TRUE = TRUE) ";
 
     const selectSql = `SELECT classes.id AS "id",
     classes.class_code AS "code",
@@ -115,17 +122,24 @@ getClassList = async function (req, res) {
         ${searchSQL} 
         AND classes.status = 20 `;
     const pagingAndSortSql = `ORDER BY ${sort}
-      LIMIT $5 OFFSET $6`;
+      LIMIT $6 OFFSET $7`;
 
     const sqlSelectInputValues = [
       addresses,
       grades,
       subjects,
       tutorTypes,
+      classTypes,
       itemsPerPage,
       (currentPage - 1) * itemsPerPage,
     ];
-    const sqlCountInputValues = [addresses, grades, subjects, tutorTypes];
+    const sqlCountInputValues = [
+      addresses,
+      grades,
+      subjects,
+      tutorTypes,
+      classTypes,
+    ];
 
     const sqlClassList = await pool.query(
       selectSql + conditionSql + pagingAndSortSql,
