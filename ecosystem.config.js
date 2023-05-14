@@ -1,5 +1,7 @@
 module.exports = {
   apps : [{
+    name: 'paputea be',
+    append_env_to_name: true,
     script: 'index.js',
     max_memory_restart: '500M',
     restart_delay: 20000,
@@ -9,12 +11,10 @@ module.exports = {
 
     env: {
       NODE_ENV: "development",
-      name: 'paputea be development',
       ...require("dotenv").config({ path: ".env.development" }).parsed,
     },
     env_production: {
       NODE_ENV: "production",
-      name: 'paputea be production',
       ...require("dotenv").config({ path: ".env.production" }).parsed,
     },
   }],
