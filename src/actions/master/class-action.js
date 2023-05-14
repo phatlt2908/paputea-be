@@ -17,7 +17,8 @@ getClassList = async function (req, res) {
       : "(classes.status = ANY($1) OR TRUE = TRUE) ";
     searchSQL += keywordSearch
       ? `AND (LOWER(classes.class_code) LIKE '%' || LOWER($2) || '%'
-            OR LOWER(static_address.name) LIKE '%' || LOWER($2) || '%'
+            OR LOWER(static_province.name) LIKE '%' || LOWER($2) || '%'
+            OR LOWER(static_district.name) LIKE '%' || LOWER($2) || '%'
             OR LOWER(classes.register_name) LIKE '%' || LOWER($2) || '%'
             OR LOWER(classes.register_phone) LIKE '%' || LOWER($2) || '%'
             OR LOWER(static_grade.name) LIKE '%' || LOWER($2) || '%') `
@@ -27,7 +28,8 @@ getClassList = async function (req, res) {
       classes.id AS "id",
       classes.class_code AS "classCode",
       classes.register_name AS "registerName",
-      static_address.name AS "addressProvince",
+      static_province.name AS "addressProvince",
+      static_district.name AS "addressDistrict",
       classes.address_detail AS "addressDetail",
       classes.register_phone AS "registerPhone",
       static_grade.name AS "grade",
@@ -41,8 +43,10 @@ getClassList = async function (req, res) {
       classes.tuition AS "tuition"`;
     const countSql = `SELECT COUNT(classes.id) as count `;
     const conditionSql = `FROM classes
-      LEFT JOIN static_address
-        ON static_address.id = classes.address_id
+      LEFT JOIN static_district
+        ON static_district.id = classes.district_id
+      LEFT JOIN static_province
+        ON static_province.id = static_district.province_id
       LEFT JOIN static_grade
         ON static_grade.id = classes.grade_id
       LEFT JOIN static_subject

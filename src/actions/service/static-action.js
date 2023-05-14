@@ -1,12 +1,22 @@
 const pool = require("../../../configs/psql-connect");
 const staticRepo = require("../../respository/service/static-repo");
 
-getAddressList = async function (req, res) {
+getProvinceList = async function (req, res) {
   try {
-    const sqlAddressList = await pool.query(staticRepo.ADDRESS_LIST);
-    res.status(200).send(sqlAddressList.rows);
+    const sqlProvinceList = await pool.query(staticRepo.PROVINCE_LIST);
+    res.status(200).send(sqlProvinceList.rows);
   } catch (err) {
-    console.error("Load address list failed:", err);
+    console.error("Load province list failed:", err);
+  }
+};
+
+getDistrictList = async function (req, res) {
+  try {
+    const provinceId = req.query.provinceId;
+    const sqlDistrictList = await pool.query(staticRepo.DISTRICT_LIST, [provinceId]);
+    res.status(200).send(sqlDistrictList.rows);
+  } catch (err) {
+    console.error("Load district list failed:", err);
   }
 };
 
@@ -29,7 +39,8 @@ getSubjectList = async function (req, res) {
 };
 
 module.exports = {
-  getAddressList,
+  getProvinceList,
+  getDistrictList,
   getGradeList,
   getSubjectList,
 };

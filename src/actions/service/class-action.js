@@ -11,7 +11,7 @@ createClass = async function (req, res) {
     await pool.query(classRepo.CREATE_CLASS, [
       code,
       data.registerName,
-      data.addressId,
+      data.districtId,
       data.addressDetail,
       data.registerPhone,
       data.gradeId,
@@ -74,8 +74,8 @@ getClassList = async function (req, res) {
 
     var searchSQL = "";
     searchSQL += addresses.length
-      ? `address.code = ANY($1) `
-      : "(address.code = ANY($1) OR TRUE = TRUE) ";
+      ? `province.code = ANY($1) `
+      : "(province.code = ANY($1) OR TRUE = TRUE) ";
     searchSQL += grades.length
       ? `AND grade.code = ANY($2) `
       : "AND (grade.code = ANY($2) OR TRUE = TRUE) ";
@@ -88,8 +88,8 @@ getClassList = async function (req, res) {
 
     const selectSql = `SELECT classes.id AS "id",
     classes.class_code AS "code",
-    address.name AS "province",
-    classes.address_detail AS "addressDetail",
+    province.name AS "province",
+    district.name AS "district",
     grade.name AS "gradeName",
     subject.name AS "subjectName",
     classes.sessions_per_week AS "sessionsPerWeek",
@@ -103,8 +103,10 @@ getClassList = async function (req, res) {
     classes.is_personal AS isPersonal `;
     const countSql = `SELECT COUNT(classes.id) as count `;
     const conditionSql = `FROM classes
-      INNER JOIN static_address AS address
-        ON address.id = classes.address_id
+      INNER JOIN static_district AS district
+        ON district.id = classes.district_id
+      INNER JOIN static_province AS province
+        ON province.id = district.province_id
       INNER JOIN static_grade AS grade
         ON grade.id = classes.grade_id
       INNER JOIN static_subject AS subject 

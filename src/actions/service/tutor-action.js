@@ -6,6 +6,15 @@ createTutor = async function (req, res) {
   try {
     const data = req.body;
 
+    const sqlPhoneRegisted = await pool.query(tutorRepo.CHECK_DUPLICATE_PHONE, [
+      data.phone,
+    ]);
+    if (sqlPhoneRegisted.rows.length) {
+      console.error("Create tutor failed: Duplicate phone");
+      res.status(400).send({ error: "tutor-regist-ER01" });
+      return;
+    }
+
     await pool.query(tutorRepo.CREATE_TUTOR, [
       data.phone,
       data.tutorName,
@@ -15,7 +24,7 @@ createTutor = async function (req, res) {
       data.gender,
       data.birthday,
       data.job,
-      data.workplaceId,
+      data.workplaceDistrictId,
       data.workplaceDetail,
       data.cardId,
       data.cardImageFront,
@@ -26,7 +35,7 @@ createTutor = async function (req, res) {
       data.graduationYear,
       data.graduationGrade,
       data.graduationImage,
-      data.teachingAreaId,
+      data.teachingAreaDistrictId,
       data.teachingAreaDetail,
       data.desiredTuition,
       data.freeTimes,

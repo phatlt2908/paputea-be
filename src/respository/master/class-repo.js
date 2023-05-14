@@ -3,7 +3,8 @@ module.exports = {
       classes.id AS "id",
       classes.class_code AS "classCode",
       classes.register_name AS "registerName",
-      static_address.name AS "addressProvince",
+      static_province.name AS "addressProvince",
+      static_district.name AS "addressDistrict",
       classes.address_detail AS "addressDetail",
       classes.register_phone AS "registerPhone",
       static_grade.name AS "grade",
@@ -16,8 +17,10 @@ module.exports = {
       classes.tutor_type AS "tutorType",
       classes.tuition AS "tuition"
     FROM classes
-    LEFT JOIN static_address
-      ON static_address.id = classes.address_id
+    LEFT JOIN static_district
+      ON static_district.id = classes.district_id
+    LEFT JOIN static_province
+      ON static_province.id = static_district.province_id
     LEFT JOIN static_grade
       ON static_grade.id = classes.grade_id
     LEFT JOIN static_subject
@@ -39,7 +42,8 @@ module.exports = {
       tutors.tutor_code AS "tutorCode",
       tutors.tutor_name AS "tutorName",
       tutors.phone AS "tutorPhone",
-      static_address.name AS "province",
+      static_province.name AS "province",
+      static_district.name AS "district",
       tutors.free_times AS "freeTimes",
       tutors.is_approved AS "isTutorApproved",
       tutor_class.registration_date AS "requestDate",
@@ -47,8 +51,10 @@ module.exports = {
     FROM tutor_class
     INNER JOIN tutors
       ON tutors.id = tutor_class.tutor_id
-    LEFT JOIN static_address
-      ON static_address.id = tutors.teaching_area_id
+    LEFT JOIN static_district
+      ON static_district.id = tutors.teaching_area_district_id
+    LEFT JOIN static_province
+      ON static_province.id = static_district.province_id
     WHERE
       tutor_class.class_id = $1
     ORDER BY
