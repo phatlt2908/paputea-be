@@ -15,7 +15,8 @@ module.exports = {
       classes.status AS "status",
       classes.registration_date AS "registrationDate",
       classes.tutor_type AS "tutorType",
-      classes.tuition AS "tuition"
+      classes.tuition AS "tuition",
+      classes.is_online AS "isOnline"
     FROM classes
     LEFT JOIN static_district
       ON static_district.id = classes.district_id
@@ -78,4 +79,8 @@ module.exports = {
     SET is_approved = false
     WHERE
       class_id = $1`,
+  UPDATE_CENTER_CLASS_STATUS: `UPDATE center_classes
+    SET is_confirmed = true
+    WHERE
+      id = $1`,
 };

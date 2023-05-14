@@ -10,19 +10,20 @@ getClassList = async function (req, res) {
         ? req.body.query.statusSelecteds
         : [];
     const keywordSearch = req.body.query.keywordSearch;
+    const isOnline = req.body.query.isOnline;
 
-    var searchSQL = "";
+    var searchSQL = "classes.is_online = $1 ";
     searchSQL += statusList.length
-      ? "classes.status = ANY($1) "
-      : "(classes.status = ANY($1) OR TRUE = TRUE) ";
+      ? "AND classes.status = ANY($2) "
+      : "AND (classes.status = ANY($2) OR TRUE = TRUE) ";
     searchSQL += keywordSearch
-      ? `AND (LOWER(classes.class_code) LIKE '%' || LOWER($2) || '%'
-            OR LOWER(static_province.name) LIKE '%' || LOWER($2) || '%'
-            OR LOWER(static_district.name) LIKE '%' || LOWER($2) || '%'
-            OR LOWER(classes.register_name) LIKE '%' || LOWER($2) || '%'
-            OR LOWER(classes.register_phone) LIKE '%' || LOWER($2) || '%'
-            OR LOWER(static_grade.name) LIKE '%' || LOWER($2) || '%') `
-      : "AND (classes.class_code = $2 OR TRUE = TRUE) ";
+      ? `AND (LOWER(classes.class_code) LIKE '%' || LOWER($3) || '%'
+            OR LOWER(static_province.name) LIKE '%' || LOWER($3) || '%'
+            OR LOWER(static_district.name) LIKE '%' || LOWER($3) || '%'
+            OR LOWER(classes.register_name) LIKE '%' || LOWER($3) || '%'
+            OR LOWER(classes.register_phone) LIKE '%' || LOWER($3) || '%'
+            OR LOWER(static_grade.name) LIKE '%' || LOWER($3) || '%') `
+      : "AND (classes.class_code = $3 OR TRUE = TRUE) ";
 
     const selectSql = `SELECT
       classes.id AS "id",
@@ -54,15 +55,16 @@ getClassList = async function (req, res) {
       WHERE
         ${searchSQL} `;
     const pagingAndSortSql = `ORDER BY classes.registration_date DESC, classes.id DESC
-      LIMIT $3 OFFSET $4`;
+      LIMIT $4 OFFSET $5`;
 
     const sqlSelectInputValues = [
+      isOnline,
       statusList,
       keywordSearch,
       itemsPerPage,
       (currentPage - 1) * itemsPerPage,
     ];
-    const sqlCountInputValues = [statusList, keywordSearch];
+    const sqlCountInputValues = [isOnline, statusList, keywordSearch];
 
     const sqlClassList = await pool.query(
       selectSql + conditionSql + pagingAndSortSql,
@@ -187,6 +189,25 @@ approveRequestedClass = async function (req, res) {
   }
 };
 
+approveCenterClass = async function (req, res) {
+  try {
+    const centerClassId = req.query.centerClassId;
+
+    const result = await pool.query(classRepo.UPDATE_CENTER_CLASS_STATUS, [
+      centerClassId,
+    ]);
+
+    if (result.rowCount) {
+      res.status(200).send();
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    console.error("Approve center class failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
 undoApproveRequestedClass = async function (req, res) {
   try {
     const classId = req.query.classId;
@@ -291,5 +312,6 @@ module.exports = {
   getCenterClassList,
   approveClass,
   approveRequestedClass,
+  approveCenterClass,
   undoApproveRequestedClass,
 };
