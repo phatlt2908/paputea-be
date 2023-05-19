@@ -40,4 +40,10 @@ module.exports = {
     FROM classes
     WHERE classes.id = $1
       AND status <> 3`,
+  LIKE_CLASS: `UPDATE classes
+    SET like_count = CASE
+      WHEN $1 = TRUE THEN like_count + 1
+      ELSE like_count - 1
+    END
+    WHERE classes.class_code = $2`,
 };

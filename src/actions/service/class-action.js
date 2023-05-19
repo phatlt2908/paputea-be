@@ -201,8 +201,22 @@ createCenterClass = async function (req, res) {
   }
 };
 
+likeClass = async function (req, res) {
+  try {
+    const isLike = !!req.query.isLike;
+    const classCode = req.query.classCode;
+
+    await pool.query(classRepo.LIKE_CLASS, [isLike, classCode]);
+
+    res.status(200).send();
+  } catch (err) {
+    res.status(500).send("Internal server error");
+  }
+};
+
 module.exports = {
   createClass,
   getClassList,
   createCenterClass,
+  likeClass,
 };
