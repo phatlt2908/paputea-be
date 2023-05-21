@@ -41,7 +41,9 @@ getClassList = async function (req, res) {
       classes.status AS "status",
       classes.registration_date AS "registrationDate",
       classes.tutor_type AS "tutorType",
-      classes.tuition AS "tuition"`;
+      classes.tuition AS "tuition",
+      classes.is_online AS "isOnline",
+      classes.is_personal AS "isPersonal"`;
     const countSql = `SELECT COUNT(classes.id) as count `;
     const conditionSql = `FROM classes
       LEFT JOIN static_district

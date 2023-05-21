@@ -16,7 +16,8 @@ module.exports = {
       classes.registration_date AS "registrationDate",
       classes.tutor_type AS "tutorType",
       classes.tuition AS "tuition",
-      classes.is_online AS "isOnline"
+      classes.is_online AS "isOnline",
+      classes.is_personal AS "isPersonal"
     FROM classes
     LEFT JOIN static_district
       ON static_district.id = classes.district_id
