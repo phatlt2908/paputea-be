@@ -39,23 +39,31 @@ getClassList = async function (req, res) {
     const itemsPerPage = req.body.pagination.itemsPerPage || 10;
     const currentPage = req.body.pagination.currentPage || 1;
     const addresses =
-      req.body.query.addresses && req.body.query.addresses.length
+      req.body.query &&
+      req.body.query.addresses &&
+      req.body.query.addresses.length
         ? req.body.query.addresses
         : [];
     const grades =
-      req.body.query.grades && req.body.query.grades.length
+      req.body.query && req.body.query.grades && req.body.query.grades.length
         ? req.body.query.grades
         : [];
     const subjects =
-      req.body.query.subjects && req.body.query.subjects.length
+      req.body.query &&
+      req.body.query.subjects &&
+      req.body.query.subjects.length
         ? req.body.query.subjects
         : [];
     const tutorTypes =
-      req.body.query.tutorTypes && req.body.query.tutorTypes.length
+      req.body.query &&
+      req.body.query.tutorTypes &&
+      req.body.query.tutorTypes.length
         ? req.body.query.tutorTypes
         : [];
     const classTypes =
-      req.body.query.classTypes && req.body.query.classTypes.length
+      req.body.query &&
+      req.body.query.classTypes &&
+      req.body.query.classTypes.length
         ? req.body.query.classTypes
         : [];
 
