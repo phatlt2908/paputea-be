@@ -313,8 +313,6 @@ getTutorClassList = async function (req, res) {
     const isApproved = !!req.body.query.isApproved;
     const tutorId = req.body.query.tutorId || 0;
 
-    console.log("tutorId >>> ", tutorId);
-
     var searchSQL = "tutor_class.is_approved = $1 ";
     searchSQL += "AND tutor_class.tutor_id = $2 ";
 
