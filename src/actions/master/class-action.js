@@ -306,6 +306,86 @@ getCenterClassList = async function (req, res) {
   }
 };
 
+getTutorClassList = async function (req, res) {
+  try {
+    const itemsPerPage = req.body.pagination.itemsPerPage || 10;
+    const currentPage = req.body.pagination.currentPage || 1;
+    const isApproved = !!req.body.query.isApproved;
+    const tutorId = req.body.query.tutorId || 0;
+
+    console.log("tutorId >>> ", tutorId);
+
+    var searchSQL = "tutor_class.is_approved = $1 ";
+    searchSQL += "AND tutor_class.tutor_id = $2 ";
+
+    const selectSql = `SELECT
+      classes.id AS "id",
+      classes.class_code AS "classCode",
+      classes.register_name AS "registerName",
+      static_province.name AS "addressProvince",
+      static_district.name AS "addressDistrict",
+      classes.address_detail AS "addressDetail",
+      classes.register_phone AS "registerPhone",
+      static_grade.name AS "grade",
+      static_subject.name AS "subject",
+      classes.sessions_per_week AS "sessionsPerWeek",
+      classes.opening_day AS "openingDay",
+      classes.note AS "note",
+      classes.status AS "status",
+      classes.registration_date AS "registrationDate",
+      classes.tutor_type AS "tutorType",
+      classes.tuition AS "tuition",
+      classes.is_online AS "isOnline",
+      classes.is_personal AS "isPersonal"`;
+    const countSql = `SELECT COUNT(classes.id) as count `;
+    const conditionSql = `FROM classes
+      LEFT JOIN static_district
+        ON static_district.id = classes.district_id
+      LEFT JOIN static_province
+        ON static_province.id = static_district.province_id
+      LEFT JOIN static_grade
+        ON static_grade.id = classes.grade_id
+      LEFT JOIN static_subject
+        ON static_subject.id = classes.subject_id
+      LEFT JOIN tutor_class
+        ON tutor_class.class_id = classes.id
+      WHERE
+        ${searchSQL} `;
+    const pagingAndSortSql = `ORDER BY classes.registration_date DESC, classes.id DESC
+      LIMIT $3 OFFSET $4`;
+
+    const sqlSelectInputValues = [
+      isApproved,
+      tutorId,
+      itemsPerPage,
+      (currentPage - 1) * itemsPerPage,
+    ];
+    const sqlCountInputValues = [isApproved, tutorId];
+
+    const sqlClassList = await pool.query(
+      selectSql + conditionSql + pagingAndSortSql,
+      sqlSelectInputValues
+    );
+    const sqlCount = await pool.query(
+      countSql + conditionSql,
+      sqlCountInputValues
+    );
+    const count = sqlCount.rows[0].count;
+
+    res.status(200).send({
+      classList: sqlClassList.rows,
+      pagination: {
+        itemsPerPage: itemsPerPage,
+        currentPage: currentPage,
+        totalClasses: Number(count),
+      },
+    });
+  } catch (err) {
+    console.error("load tutor class list failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
 module.exports = {
   getClassList,
   getClassDetail,
@@ -316,4 +396,5 @@ module.exports = {
   approveRequestedClass,
   approveCenterClass,
   undoApproveRequestedClass,
+  getTutorClassList
 };

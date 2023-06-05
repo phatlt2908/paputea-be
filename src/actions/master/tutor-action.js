@@ -1,4 +1,5 @@
 const pool = require("../../../configs/psql-connect");
+const tutorRepo = require("../../respository/master/tutor-repo");
 
 getTutorList = async function (req, res) {
   try {
@@ -65,6 +66,40 @@ getTutorList = async function (req, res) {
   }
 };
 
+getTutorDetail = async function (req, res) {
+  try {
+    const tutorId = req.query.id;
+
+    const tutorSqlResult = await pool.query(tutorRepo.GET_TUTOR_BY_ID, [
+      tutorId,
+    ]);
+
+    res.status(200).send(tutorSqlResult.rows[0]);
+  } catch (err) {
+    console.error("Load tutor detail failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
+approveTutor = async function (req, res) {
+  try {
+    const id = req.query.id;
+
+    const result = await pool.query(tutorRepo.APPROVE_TUTOR, [id]);
+
+    if (result.rowCount) {
+      res.status(200).send();
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    console.error("Approve tutor failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
 module.exports = {
   getTutorList,
+  getTutorDetail,
+  approveTutor,
 };
