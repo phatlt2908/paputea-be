@@ -56,9 +56,11 @@ getTutorList = async function (req, res) {
 
     res.status(200).send({
       tutorList: sqlTutorList.rows,
-      itemsPerPage: itemsPerPage,
-      currentPage: currentPage,
-      totalItems: count,
+      pagination: {
+        itemsPerPage: itemsPerPage,
+        currentPage: currentPage,
+        totalItems: Number(count),
+      },
     });
   } catch (err) {
     console.error("load tutor list failed:", err);
