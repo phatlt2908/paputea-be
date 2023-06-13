@@ -9,7 +9,8 @@ const {
   approveRequestedClass,
   approveCenterClass,
   undoApproveRequestedClass,
-  getTutorClassList
+  getTutorClassList,
+  deleteClass
 } = require("../../actions/master").class;
 
 app.use(checkToken);
@@ -24,3 +25,4 @@ app.get("/tutor-requested", getTutorRequested);
 app.post("/center-class-list", getCenterClassList);
 app.get("/center-class-approve", approveCenterClass); 
 app.post("/tutor-class-list", getTutorClassList);
+app.get("/delete", deleteClass);

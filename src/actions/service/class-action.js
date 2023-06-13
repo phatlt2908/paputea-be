@@ -84,10 +84,10 @@ getClassList = async function (req, res) {
         break;
     }
 
-    var searchSQL = "";
+    var searchSQL = "classes.is_active = TRUE ";
     searchSQL += addresses.length
-      ? `province.code = ANY($1) `
-      : "(province.code = ANY($1) OR TRUE = TRUE) ";
+      ? `AND province.code = ANY($1) `
+      : "AND (province.code = ANY($1) OR TRUE = TRUE) ";
     searchSQL += grades.length
       ? `AND grade.code = ANY($2) `
       : "AND (grade.code = ANY($2) OR TRUE = TRUE) ";

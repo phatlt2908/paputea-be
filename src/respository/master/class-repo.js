@@ -17,7 +17,8 @@ module.exports = {
       classes.tutor_type AS "tutorType",
       classes.tuition AS "tuition",
       classes.is_online AS "isOnline",
-      classes.is_personal AS "isPersonal"
+      classes.is_personal AS "isPersonal",
+      classes.is_active AS "isActive"
     FROM classes
     LEFT JOIN static_district
       ON static_district.id = classes.district_id
@@ -84,4 +85,7 @@ module.exports = {
     SET is_confirmed = true
     WHERE
       id = $1`,
+  DELETE_CLASS: `UPDATE classes
+    SET is_active = false
+    WHERE id = $1`,
 };

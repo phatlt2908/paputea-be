@@ -35,7 +35,8 @@ module.exports = {
       ON grade.id = classes.grade_id
     INNER JOIN static_subject AS subject 
       ON subject.id = classes.subject_id
-    WHERE classes.class_code = $1`,
+    WHERE classes.class_code = $1
+      AND classes.is_active = TRUE`,
   CHECK_EXIST_CLASS_ID: `SELECT classes.id AS "id"
     FROM classes
     WHERE classes.id = $1

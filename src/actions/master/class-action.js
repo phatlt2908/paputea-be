@@ -12,7 +12,8 @@ getClassList = async function (req, res) {
     const keywordSearch = req.body.query.keywordSearch;
     const isOnline = req.body.query.isOnline;
 
-    var searchSQL = "classes.is_online = $1 ";
+    var searchSQL = "classes.is_active = TRUE "
+    searchSQL += "AND classes.is_online = $1 ";
     searchSQL += statusList.length
       ? "AND classes.status = ANY($2) "
       : "AND (classes.status = ANY($2) OR TRUE = TRUE) ";
@@ -313,7 +314,8 @@ getTutorClassList = async function (req, res) {
     const isApproved = !!req.body.query.isApproved;
     const tutorId = req.body.query.tutorId || 0;
 
-    var searchSQL = "tutor_class.is_approved = $1 ";
+    var searchSQL = "classes.is_active = TRUE ";
+    searchSQL += "AND tutor_class.is_approved = $1 ";
     searchSQL += "AND tutor_class.tutor_id = $2 ";
 
     const selectSql = `SELECT
@@ -384,6 +386,25 @@ getTutorClassList = async function (req, res) {
   }
 };
 
+deleteClass = async function (req, res) {
+  try {
+    const classId = req.query.classId;
+
+    const classDeletedResult = await pool.query(classRepo.DELETE_CLASS, [
+      classId,
+    ]);
+
+    if (classDeletedResult.rowCount) {
+      res.status(200).send();
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    console.error("Delete class failed:", err);
+    res.status(400).send({ mes: err });
+  }
+};
+
 module.exports = {
   getClassList,
   getClassDetail,
@@ -394,5 +415,6 @@ module.exports = {
   approveRequestedClass,
   approveCenterClass,
   undoApproveRequestedClass,
-  getTutorClassList
+  getTutorClassList,
+  deleteClass,
 };
