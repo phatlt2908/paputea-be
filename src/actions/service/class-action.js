@@ -70,7 +70,7 @@ getClassList = async function (req, res) {
     var sort;
     switch (req.body.sort) {
       case "1":
-        sort = "classes.registration_date DESC";
+        sort = "classes.registration_date DESC, classes.id DESC";
         break;
       case "2":
         sort = "classes.tuition ASC";
@@ -80,7 +80,7 @@ getClassList = async function (req, res) {
         break;
 
       default:
-        sort = "classes.registration_date DESC";
+        sort = "classes.registration_date DESC, classes.id DESC";
         break;
     }
 
