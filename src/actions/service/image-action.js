@@ -3,6 +3,7 @@ const drive = require("../../../configs/ggDrive/drive");
 
 uploadImage = async function (req, res) {
   try {
+    console.log("req >>> ", req);
     drive.uploadFile(req.file, res, saveImage);
   } catch (err) {
     console.error("upload image failed:", err);

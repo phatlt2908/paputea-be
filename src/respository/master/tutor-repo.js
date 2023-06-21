@@ -7,6 +7,7 @@ module.exports = {
       tutors.gender AS "gender",
       tutors.birthday AS "birthday",
       tutors.job AS "job",
+      tutors.avatar AS "avatar",
       workplace_province.name AS "workplaceProvince",
       workplace_district.name AS "workplaceDistrict",
       tutors.workplace_detail AS "workplaceDetail",
