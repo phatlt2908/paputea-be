@@ -111,6 +111,51 @@ requestClass = async function (req, res) {
   }
 };
 
+getTutorList = async function (req, res) {
+  try {
+    const itemsPerPage = req.body.pagination.itemsPerPage || 10;
+    const currentPage = req.body.pagination.currentPage || 1;
+
+    const selectSql = `SELECT tutors.id AS "id",
+    tutors.tutor_name AS "tutorName",
+    tutors.job AS "job",
+    tutors.major AS "major",
+    tutors.advantage AS "advantage" `;
+    const countSql = `SELECT COUNT(tutors.id) as count `;
+    const conditionSql = `FROM tutors
+      WHERE
+      tutors.is_approved = TRUE `;
+    const pagingAndSortSql = `ORDER BY tutors.id DESC
+      LIMIT $1 OFFSET $2`;
+
+    const sqlSelectInputValues = [
+      itemsPerPage,
+      (currentPage - 1) * itemsPerPage,
+    ];
+
+    const sqlTutorList = await pool.query(
+      selectSql + conditionSql + pagingAndSortSql,
+      sqlSelectInputValues
+    );
+
+    const sqlCount = await pool.query(
+      countSql + conditionSql
+    );
+    const count = sqlCount.rows[0].count;
+
+    res.status(200).send({
+      tutorList: sqlTutorList.rows,
+      itemsPerPage: itemsPerPage,
+      currentPage: currentPage,
+      totalClasses: count,
+    });
+  } catch (err) {
+    console.error("load tutor list failed:", err);
+    res.status(500).send("Internal server error");
+  }
+};
+
 module.exports = {
   createTutor,
+  getTutorList
 };
