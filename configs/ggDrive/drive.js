@@ -27,7 +27,7 @@ const SCOPES = ["https://www.googleapis.com/auth/drive"];
 const TOKEN_PATH = "google-token.json";
 
 // The id of parent folder store all image uploaded
-const PARENT_FOLDER = "1nmMRvS1RT9qB_cDNNtX3CqlhrICqH2Tb";
+const PARENT_FOLDER = "1Lr4wcoNC5RYZ3vK2ZQOxD9GRXfYazE3I";
 
 // Load client secrets from a local file.
 fs.readFile("configs/ggDrive/drive-credentials.json", (err, content) => {
@@ -116,58 +116,61 @@ function listFiles(auth) {
 }
 // [END drive_quickstart]
 
-function uploadFile(file, res, callback) {
-  const FILE_NAME_PREFIX = "paputea-";
-  var auth;
-  var credentials;
+function uploadFile(file) {
+  return new Promise((resolve, reject) => {
+    const FILE_NAME_PREFIX = "paputea-";
+    var auth;
+    var credentials;
 
-  // Load client secrets from a local file.
-  fs.readFile("configs/ggDrive/drive-credentials.json", (err, content) => {
-    if (err) return console.log("Error loading client secret file:", err);
-    // Authorize a client with credentials, then call the Google Drive API.
-    credentials = JSON.parse(content);
+    // Load client secrets from a local file.
+    fs.readFile("configs/ggDrive/drive-credentials.json", (err, content) => {
+      if (err) return reject("Error loading client secret file: " + err);
+      // Authorize a client with credentials, then call the Google Drive API.
+      credentials = JSON.parse(content);
 
-    const { client_secret, client_id, redirect_uris } = credentials.web;
-    const oAuth2Client = new google.auth.OAuth2(
-      client_id,
-      client_secret,
-      redirect_uris[0]
-    );
-
-    // Check if we have previously stored a token.
-    fs.readFile(TOKEN_PATH, (err, token) => {
-      // if (err) return getAccessToken(oAuth2Client, callback);
-      oAuth2Client.setCredentials(JSON.parse(token));
-      auth = oAuth2Client;
-
-      const drive = google.drive({ version: "v3", auth });
-
-      const fileMetadata = {
-        name: FILE_NAME_PREFIX + file.originalname,
-        parents: [PARENT_FOLDER],
-      };
-      const media = {
-        mimeType: file.mimetype,
-        body: fs.createReadStream(file.path),
-      };
-
-      drive.files.create(
-        {
-          resource: fileMetadata,
-          media: media,
-          fields: "id",
-        },
-        (err, fileUploaded) => {
-          if (err) {
-            console.error(err);
-          } else {
-            callback(res, {
-              imageId: fileUploaded.data.id,
-              fileName: FILE_NAME_PREFIX + file.originalname,
-            });
-          }
-        }
+      const { client_secret, client_id, redirect_uris } = credentials.web;
+      const oAuth2Client = new google.auth.OAuth2(
+        client_id,
+        client_secret,
+        redirect_uris[0]
       );
+
+      // Check if we have previously stored a token.
+      fs.readFile(TOKEN_PATH, (err, token) => {
+        // if (err) return getAccessToken(oAuth2Client, callback);
+        oAuth2Client.setCredentials(JSON.parse(token));
+        auth = oAuth2Client;
+
+        const drive = google.drive({ version: "v3", auth });
+
+        const fileMetadata = {
+          name: FILE_NAME_PREFIX + file.originalname,
+          parents: [PARENT_FOLDER],
+        };
+        const media = {
+          mimeType: file.mimetype,
+          body: fs.createReadStream(file.path),
+        };
+
+        drive.files.create(
+          {
+            resource: fileMetadata,
+            media: media,
+            fields: "id",
+          },
+          (err, fileUploaded) => {
+            if (err) {
+              console.error(err);
+              reject(err);
+            } else {
+              resolve({
+                imageId: fileUploaded.data.id,
+                fileName: FILE_NAME_PREFIX + file.originalname,
+              });
+            }
+          }
+        );
+      });
     });
   });
 }

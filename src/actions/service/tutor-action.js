@@ -120,6 +120,7 @@ getTutorList = async function (req, res) {
     tutors.tutor_name AS "tutorName",
     tutors.job AS "job",
     tutors.major AS "major",
+    tutors.avatar AS "avatar",
     tutors.advantage AS "advantage" `;
     const countSql = `SELECT COUNT(tutors.id) as count `;
     const conditionSql = `FROM tutors

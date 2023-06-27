@@ -35,4 +35,7 @@ module.exports = {
   CHECK_DUPLICATE_PHONE: `SELECT tutors.id
     FROM tutors 
     WHERE tutors.phone = $1`,
+  UPDATE_TUTOR_AVATAR: `UPDATE tutors
+    SET avatar = $1
+    WHERE id = $2`
 };
