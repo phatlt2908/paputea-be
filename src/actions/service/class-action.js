@@ -116,7 +116,7 @@ getClassList = async function (req, res) {
     classes.like_count AS "likeCount",
     classes.is_online AS "isOnline",
     classes.is_personal AS isPersonal,
-    CASE WHEN classes.status = 20 THEN true ELSE false END AS "canRegister" `;
+    CASE WHEN classes.status = 30 THEN false ELSE true END AS "canRegister" `;
     const countSql = `SELECT COUNT(classes.id) as count `;
     const conditionSql = `FROM classes
       INNER JOIN static_district AS district
