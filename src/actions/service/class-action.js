@@ -115,7 +115,8 @@ getClassList = async function (req, res) {
     classes.note AS "note",
     classes.like_count AS "likeCount",
     classes.is_online AS "isOnline",
-    classes.is_personal AS isPersonal `;
+    classes.is_personal AS isPersonal,
+    CASE WHEN classes.status = 20 THEN true ELSE false END AS "canRegister" `;
     const countSql = `SELECT COUNT(classes.id) as count `;
     const conditionSql = `FROM classes
       INNER JOIN static_district AS district
@@ -127,8 +128,7 @@ getClassList = async function (req, res) {
       INNER JOIN static_subject AS subject 
         ON subject.id = classes.subject_id
       WHERE
-        ${searchSQL} 
-        AND classes.status = 20 `;
+        ${searchSQL} `;
     const pagingAndSortSql = `ORDER BY ${sort}
       LIMIT $6 OFFSET $7`;
 
