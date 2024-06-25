@@ -1,5 +1,6 @@
 FROM node:16-alpine as base
 RUN apk add --no-cache libc6-compat
+
 WORKDIR /app
 COPY package*.json ./
 
@@ -9,4 +10,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD npm start
+CMD [ "node", "index.js" ]
