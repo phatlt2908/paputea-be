@@ -3,7 +3,8 @@ module.exports = {
       address_detail, register_phone, grade_id, subject_id, sessions_per_week,
       opening_day, note, status, registration_date, tutor_type, tuition,
       is_online, is_personal)
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+    RETURNING id`,
   COUNT_ALL_CLASSES: `SELECT COUNT(classes.id) as count
     FROM classes`,
   CREATE_CENTER_CLASS: `INSERT INTO center_classes (register_name, 

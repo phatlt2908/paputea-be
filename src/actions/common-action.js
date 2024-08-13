@@ -1,3 +1,5 @@
+const nodemailer = require('nodemailer');
+
 toKebab = function (str) {
     str = str.normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -9,6 +11,32 @@ toKebab = function (str) {
         .join('-');
 }
 
+sendMail = function (to, subject, content) {
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASSWORD
+        }
+    });
+
+    let mailOptions = {
+        from: process.env.MAIL_USER,
+        to: to,
+        subject: subject,
+        html: content
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
 module.exports = {
-    toKebab
+    toKebab,
+    sendMail
 }

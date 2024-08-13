@@ -1,6 +1,7 @@
 const pool = require("../../../configs/psql-connect");
 const classRepo = require("../../respository/service/class-repo");
 const tutorRepo = require("../../respository/service/tutor-repo");
+const { sendMail } = require("../common-action");
 
 createTutor = async function (req, res) {
   try {
@@ -15,7 +16,7 @@ createTutor = async function (req, res) {
       return;
     }
 
-    await pool.query(tutorRepo.CREATE_TUTOR, [
+    const newTutor = await pool.query(tutorRepo.CREATE_TUTOR, [
       data.phone,
       data.tutorName,
       data.phone,
@@ -44,6 +45,13 @@ createTutor = async function (req, res) {
       false,
       new Date(),
     ]);
+
+    sendMail(process.env.MAIL_RECEIVE,
+      "PAPUTEA - Đăng ký làm gia sư giáo viên",
+      `<h1>Đăng ký làm gia sư giáo viên</h1>
+      <p>Họ và tên: ${data.tutorName}</p>
+      <p>Số điện thoại: ${data.phone}</p>
+      <p>Chi tiết: <a href="https://admin.paputea.com/tutorDetail?tutorId=${newTutor.rows[0].id}">https://admin.paputea.com/tutorDetail?tutorId=${newTutor.rows[0].id}</a></p>`);
 
     res.status(200).send();
   } catch (err) {

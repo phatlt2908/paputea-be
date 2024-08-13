@@ -1,5 +1,6 @@
 const pool = require("../../../configs/psql-connect");
 const classRepo = require("../../respository/service/class-repo");
+const { sendMail } = require("../common-action");
 
 createClass = async function (req, res) {
   try {
@@ -8,7 +9,7 @@ createClass = async function (req, res) {
     const code =
       "P" + new Date().getTime() + "-" + Math.floor(Math.random() * 100);
 
-    await pool.query(classRepo.CREATE_CLASS, [
+    const newClass = await pool.query(classRepo.CREATE_CLASS, [
       code,
       data.registerName,
       data.districtId,
@@ -26,6 +27,13 @@ createClass = async function (req, res) {
       !!data.isOnline,
       !!data.isPersonal,
     ]);
+
+    sendMail(process.env.MAIL_RECEIVE,
+      "PAPUTEA - Đăng ký tìm gia sư giáo viên",
+      `<h1>Đăng ký tìm gia sư giáo viên</h1>
+      <p>Họ và tên: ${data.registerName}</p>
+      <p>Số điện thoại: ${data.registerPhone}</p>
+      <p>Chi tiết: <a href="https://admin.paputea.com/classDetail?classId=${newClass.rows[0].id}">${code}</a></p>`);
 
     res.status(200).send();
   } catch (err) {
